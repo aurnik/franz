@@ -1,0 +1,177 @@
+# vocabulary.yaml
+# A framework for REASONING from a musician's words to a place in THIS sound — not a
+# word -> frequency lookup table. For each family of perceptual terms it gives the quality
+# the word names, its physical cause stated relationally, and how to locate it on the
+# actual sound. The LLM does the locating by reasoning, because the same word sits in
+# different places on different sounds ("boxy" on a kick, a guitar, and this bass differ).
+#
+# HOW TO USE IT
+#   - Find the term among a family's `synonyms` (or `antonyms` for its inverse).
+#     Unlisted words: reason from the nearest family, or from an antonym's opposite.
+#   - Read `quality` (what it sounds/feels like) and `cause` (what in the spectrum produces
+#     it, stated relative to the sound's structure).
+#   - LOCATE IT ON THIS SOUND. Exact frequencies are deliberately omitted — where a quality
+#     lives depends on the register being played. Call `get_played_notes` to read the
+#     fundamental(s), then reason: low and low-mid qualities sit relative to the fundamental;
+#     high qualities (presence, harshness, brightness, air) live in the upper harmonics, well
+#     above a bass's fundamental, and only exist if the harmonics/noise to carry them exist.
+#     Use the signal flow to decide WHERE to act.
+#   - `tension` notes which families share spectral territory so you weigh the collateral of
+#     a move. Reason about the trade; don't read it off a number.
+
+clusters:
+
+  - id: sub_weight
+    quality: >
+      Felt more than heard — raw power, rumble, physical pressure. Too much is floppy and
+      undefined; too little loses impact.
+    cause: The deepest energy, at and just below the fundamental of a low note.
+    locate: >
+      Only meaningful in low registers. On this bass (read get_played_notes) it's at and
+      below the fundamental of the lowest note; on a high sound there's little here.
+    synonyms: [sub, rumble, boom, weight, deep, powerful, massive, floor-shaking]
+    antonyms: [light, thin, weightless]
+    tension: >
+      Overlaps the body. Too much sub muddies and overwhelms; build it with the
+      sub-oscillator and protect it when de-mudding.
+
+  - id: body_fullness
+    quality: >
+      The foundation and solidity of the sound — its fullness and size. Excess booms;
+      deficit feels thin and skeletal.
+    cause: Energy in the low range, around and just above the fundamental.
+    locate: >
+      On and just above the played fundamental (get_played_notes) — for this bass, the low
+      region built by the engines and the sub. Where the sound's "size" lives.
+    synonyms: [body, fullness, weight, punch, thickness, fat, heavy, solid, round, full, meaty, thick]
+    antonyms: [thin, weak, hollow, lightweight, skeletal]
+    tension: Shares the low-mids with warmth and mud — see those families before a broad move.
+
+  - id: warmth_low_mids
+    quality: >
+      A comfortable, analog-like richness and density; the sound feels warm and full-bodied.
+      Deficit feels cold, sterile, clinical.
+    cause: >
+      Energy in the LOW-MIDS — the region an octave or so above the fundamental. In
+      moderation it reads as warmth; in excess the same region becomes mud (see mud_boxiness).
+    locate: >
+      Relative to the played register (get_played_notes): the low-mids sitting above this
+      bass's fundamental — the same band warmth and mud share.
+    synonyms: [warmth, density, richness, warm, cozy, dense, rich, tubey]
+    antonyms: [cold, sterile, clinical, thin]
+    tension: >
+      Warmth and mud are the SAME low-mids seen positively vs negatively — adding warmth
+      risks mud, cutting mud costs warmth. Decide which the request wants and weigh the trade.
+
+  - id: mud_boxiness
+    quality: >
+      A congested, hollow, "cardboard box" coloration — stuffy and closed-in, energy piling
+      up and masking the sound's own clarity.
+    cause: >
+      An EXCESS of low-mid energy relative to the fundamental and the highs — the same region
+      that gives warmth and body in moderation, but smears and congests in excess. Something
+      to reduce, not an absence to fill.
+    locate: >
+      Where it sits depends on register, not a fixed frequency — roughly the band an octave or
+      two above the fundamental (read get_played_notes), so on this low bass it's lower than on
+      a midrange lead. Find the actual build-up on THIS patch from its pitch and the signal
+      flow; don't assume a number.
+    synonyms: [mud, muddy, boxy, boxiness, stuffy, woolly, congested, murky, honky, cloudy]
+    antonyms: [clean, open, clear, transparent]
+    tension: >
+      The same low-mids carry warmth and the top of the body, so reducing mud always trades
+      against warmth and can thin the body. Cut only what the congestion needs; protect the
+      fundamental.
+
+  - id: nasal_honky
+    quality: >
+      A pinched, nasal, megaphone-like coloration — like a hand cupped over the sound. Adds
+      intelligibility in balance, fatiguing in excess.
+    cause: An over-emphasis in the mid-range, distinctly above the warmth/mud region.
+    locate: >
+      The mids, well above where mud sits — for a bass this is upper-harmonic content, not the
+      fundamental. Reason up from the played register.
+    synonyms: [nasal, honky, quacky, telephonic, midrangy, pinched]
+    antonyms: [open, full-range, balanced]
+
+  - id: presence_clarity
+    quality: >
+      Presence and intelligibility — the sound feels close, forward, detailed. Deficit makes
+      it recede; excess tips into harshness.
+    cause: Energy in the upper-mids where the ear reads detail and attack.
+    locate: >
+      The upper-mid harmonics — well above a bass's fundamental, so this is about the sound's
+      harmonic content and transient edge, not its low end.
+    synonyms: [presence, clarity, definition, cut, articulation, forward, up-front, detailed, defined, crisp]
+    antonyms: [distant, recessed, veiled, buried]
+    tension: Just below harshness — pushing presence too far becomes harsh.
+
+  - id: harshness_upper_mids
+    quality: >
+      An abrasive, fatiguing edge — brittle, strident, painful when pushed. Where aggressive
+      transients and brittle edges live.
+    cause: An EXCESS in the upper-mids / lower-treble; a region to reduce.
+    locate: >
+      The upper harmonics and the edge of the sound's brightness/distortion — for a bass,
+      generated by the engines, fold/distortion, and filter drive, not the fundamental.
+    synonyms: [harshness, brittleness, edge, glassiness, harsh, brittle, shrill, grating, strident, sharp, painful]
+    antonyms: [smooth, polished, silky, soft, gentle]
+    tension: Sits just above presence — taming harshness can dull presence; cut narrowly.
+
+  - id: sibilance
+    quality: >
+      A piercing, spitty high edge — exciting in a small amount, painful in excess. On a synth
+      the analog is sharp high-transient or noise-layer edge.
+    cause: An EXCESS in the high treble where sharp transient and "ess"-like energy concentrate.
+    locate: The high treble — the top of the harmonic/noise content, far above the fundamental.
+    synonyms: [sibilance, spitty, sibilant, hissy, piercing]
+    antonyms: [smooth top, controlled highs]
+
+  - id: brightness_air
+    quality: >
+      Brightness, sparkle, sheen — the sound feels open and detailed. Excess is sharp and
+      fatiguing; deficit is dull and dark (see darkness_dullness).
+    cause: Energy in the treble — the upper harmonics and any high noise/air layer.
+    locate: >
+      The top of the sound's spectrum — its upper harmonics, well above a bass's fundamental.
+      If those harmonics or a noise layer aren't present there is nothing to brighten; it must
+      be generated upstream (engine content, fold), not just EQ'd up.
+    synonyms: [brightness, sparkle, sheen, shimmer, crispness, bright, crisp, sparkling, shiny, brilliant, lively]
+    antonyms: [dull, dark, muffled, veiled, lifeless, flat]
+
+  - id: air_brilliance
+    quality: >
+      "Air" — space, openness, studio ambience, a sense of breath above the body of the sound.
+      Usually a subtle lift; excess sounds unnatural or thin.
+    cause: The very top of the audible range — the highest harmonics and ambience.
+    locate: >
+      The extreme top, above brightness. For a bass this is faint upper-harmonic and noise
+      content; like brightness it can only be lifted if it exists.
+    synonyms: [air, brilliance, openness, airy, ethereal, breathy, silky top, silky highs]
+    antonyms: [closed, dark, stifled, stuffy]
+
+  - id: thinness_hollowness
+    quality: >
+      Thin, hollow, skeletal — the sound has top end but lacks substance underneath. A DEFICIT,
+      not an excess: the body and low-mids are missing.
+    cause: An ABSENCE of body and low-mid energy — a missing band, not one to cut.
+    locate: >
+      The low and low-mid region around and above the fundamental (get_played_notes) that
+      should be there and isn't — fix by building it at the source (engines, sub), since no cut
+      can add what's absent.
+    synonyms: [thin, hollow, empty, skeletal, reedy, anemic, wispy, insubstantial, weak, papery]
+    antonyms: [full, rich, thick, dense, meaty, heavy]
+
+  - id: darkness_dullness
+    quality: >
+      Dark, dull, muffled, veiled — a warm, recessed, lid-on character. A DEFICIT of highs; can
+      be wanted (vintage, intimate) or a problem (no air).
+    cause: A roll-off or ABSENCE of treble — a missing high band, not one to cut.
+    locate: >
+      The treble and above — the upper harmonics that are rolled off. Recover by reopening the
+      filter or generating new top end upstream, not by cutting.
+    synonyms: [dark, dull, muffled, veiled, flat, stifled, closed, dead]
+    antonyms: [bright, open, airy, crisp, clear, sparkling]
+    notes: >
+      'murky' / 'woolly' read here when the HIGHS are missing, but as mud_boxiness when the
+      problem is excess LOW-mids. Decide which from the request and the sound.

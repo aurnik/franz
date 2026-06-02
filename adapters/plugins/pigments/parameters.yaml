@@ -1,0 +1,727 @@
+synth: Pigments
+format: VST3
+notes: 'Hand-picked key sound-drivers. Values are normalized 0..1. Params addressed by index:
+  Pigments idents equal the index, and 55 display names are ambiguous. ''name'' is for humans + integrity
+  checks; ''sample'' is the formatted value at capture time (a unit hint, not a default).'
+groups:
+  mix:
+    tool: set_mix
+    description: 'Master, engine, and voice levels / routing (gain & balance). On/off targets
+      (engine1_on, engine2_on) take 1.0 = ON/audible, 0.0 = OFF — franz maps that to Pigments''
+      actual polarity, so always use 1=on / 0=off regardless of the param''s display name.
+      engine1_volume / engine2_volume are the MIXER levels for each engine (the usual "make
+      engine N louder/quieter"); they are distinct from oscillator.engine*_main_vol, which is
+      the wavetable engine''s INTERNAL output level. For overall engine loudness, use these.'
+    params:
+      master_volume:
+        name: Master Volume
+        index: 0
+        sample: '-10.2'
+      engine1_volume:
+        name: Engine 1 Volume
+        index: 160
+        sample: '0.000'
+      engine2_volume:
+        name: Engine 2 Volume
+        index: 162
+        sample: '0.000'
+      engine1_on:
+        name: Engine 1 Bypass
+        index: 80
+        on_value: 0.0
+      engine2_on:
+        name: Engine 2 Bypass
+        index: 120
+        on_value: 0.0
+      engine1_filter_mix:
+        name: Engine1 Filter Mix
+        index: 161
+        sample: '0.000'
+      engine2_filter_mix:
+        name: Engine2 Filter Mix
+        index: 163
+        sample: '0.000'
+      voice_pan:
+        name: Voice Pan
+        index: 202
+        sample: '0.500'
+      amp_mod_amount:
+        name: Amp Mod Amount
+        index: 201
+        sample: '0.000'
+      filter_routing:
+        name: Filter Routing
+        index: 200
+        sample: '0.000'
+      bus_b_on:
+        name: FX Bus B Bypass
+        index: 1177
+        sample: 'On'
+        on_value: 0.0
+      bus_b_volume:
+        name: Bus B Volume
+        index: 907
+        sample: '0.000'
+  amp_env:
+    tool: set_envelope
+    description: "Amplitude envelope (Env Amp, hardwired to the VCA) \u2014 the note's loudness shape.\
+      \ ADSR sets transient (attack/decay), sustain, and release; the curve params bend the\
+      \ attack/decay contour for snappy vs soft transients."
+    params:
+      attack:
+        name: Env Amp Attack
+        index: 5
+        sample: '0.537'
+      decay:
+        name: Env Amp Decay
+        index: 6
+        sample: '0.300'
+      sustain:
+        name: Env Amp Sustain
+        index: 7
+        sample: '1.00'
+      release:
+        name: Env Amp Release
+        index: 8
+        sample: '0.020'
+      attack_curve:
+        name: Env Amp AttackCurve
+        index: 9
+      decay_curve:
+        name: Env Amp DecayCurve
+        index: 10
+  filter:
+    tool: set_filter
+    description: 'Two filters. F1 is the main tone-shaping filter (cutoff/resonance/drive) and is
+      where the muddy->distortion move lives; Env 2 is wired to F1 cutoff, so F1 also moves over
+      time (see set_mod_envelope). F2 is a FORMANT filter for vowel/vocal/brass-like color, with four
+      controls: f2_freq_shift moves the formant center (vowel openness, darker<->brighter), f2_morph
+      morphs between vowel shapes (ah/ee/oo character), f2_q_factor sharpens the vowel peaks
+      (subtle<->vocal and resonant), f2_blend sets how strongly the formant colors the signal. Engage
+      with f2_on for a talking/reedy/brass-like character; the generic cutoff/resonance/drive knobs do
+      nothing while Formant is the loaded type, which is why F2 exposes only the four formant knobs.
+      On/off targets (f1_on, f2_on): 1.0 = filter active, 0.0 = filter off.'
+    params:
+      f1_on:
+        name: F1 On/Off
+        index: 164
+        sample: 'On'
+        on_value: 0.0
+      f1_cutoff:
+        name: F1 Cutoff
+        index: 165
+        sample: '142'
+      f1_resonance:
+        name: F1 Resonance
+        index: 166
+        sample: '0.000'
+      f1_drive:
+        name: F1 Drive
+        index: 168
+        sample: '0.000'
+      f1_morph:
+        name: F1 Morph
+        index: 176
+        sample: '0.000'
+      f1_mode:
+        name: F1 Mode
+        index: 1075
+        sample: Both
+      f1_spread:
+        name: F1 Spread
+        index: 169
+        sample: '50.0'
+      f1_fm_amount:
+        name: F1 FM Amount
+        index: 179
+        sample: '0.000'
+      f1_volume:
+        name: F1 Volume
+        index: 180
+        sample: '0.000'
+      f1_pan:
+        name: F1 Pan
+        index: 181
+        sample: '0.500'
+      f2_on:
+        name: F2 On/Off
+        index: 182
+        sample: 'On'
+        on_value: 0.0
+      f2_freq_shift:
+        name: F2 Frequency Shift
+        index: 193
+        sample: '1.00'
+      f2_morph:
+        name: F2 Morph
+        index: 194
+        sample: '0.000'
+      f2_q_factor:
+        name: F2 Q Factor
+        index: 195
+        sample: '1.00'
+      f2_blend:
+        name: F2 Blend
+        index: 196
+        sample: '-12.0'
+      f2_volume:
+        name: F2 Volume
+        index: 198
+        sample: '0.000'
+      f2_pan:
+        name: F2 Pan
+        index: 199
+        sample: '0.500'
+  oscillator:
+    tool: set_oscillator
+    description: 'Wavetable engine front-panel controls for Engine 1 and Engine 2 (the patch loads
+      the BASIC WAVEFORMS table on both). Position is the primary timbre morph and selects the
+      oscillator shape: 0.0 = sine, 0.333 = triangle, 0.667 = saw, 1.0 = square, blending in
+      between — use these exact anchors for a named waveform, never guess (e.g. triangle is 0.333,
+      not 0.5). Fold Amount and Phase Distortion Amount add harmonics/edge; Mod Amount + PM Amount
+      drive the FM/phase-mod modulator oscillator (level via Mod Vol). engine*_coarse is a bipolar
+      semitone tune spanning -36 st (0.0) to +36 st (1.0), linear, so normalized = (semitones + 36)
+      / 72: 0 st (no change) is 0.5, an octave down (-12) is 0.333, -24 is 0.167, +12 is 0.667.
+      Compute the value from the interval you want — do NOT guess (0.25 is -18 st, not an octave) —
+      then read back get_parameter''s formatted to confirm. NOTE: the wavetable SELECTION,
+      the Fold type, Phase-Distortion type, and Mod type are menu/patch choices, not
+      parameter-addressable — only the continuous *Amount/Position knobs morph the loaded table.
+      Two different "volume" knobs exist per engine: engine*_main_vol HERE is the wavetable
+      engine''s INTERNAL output level; to set how loud the engine sits in the overall mix, use
+      mix.engine*_volume (set_mix) instead — that mixer level is the usual "engine louder/quieter".'
+    params:
+      engine1_main_vol:
+        name: Wavetable 1 Main Vol
+        index: 81
+        sample: '-0.000'
+      engine1_position:
+        name: Wavetable 1 Position
+        index: 85
+        sample: '0.000'
+      engine1_fold_amount:
+        name: Wavetable 1 Fold Amount
+        index: 96
+        sample: '0.000'
+      engine1_ph_dist_amount:
+        name: Wavetable 1 Ph Dist Amount
+        index: 94
+      engine1_mod_vol:
+        name: Wavetable 1 Mod Vol
+        index: 82
+      engine1_mod_amount:
+        name: Wavetable 1 Mod Amount
+        index: 89
+        sample: '0.000'
+      engine1_pm_amount:
+        name: Wavetable 1 PM Amount
+        index: 91
+      engine1_coarse:
+        name: Coarse
+        index: 1180
+        sample: '0'
+      engine1_fine:
+        name: Fine
+        index: 1181
+        sample: '0.000'
+      engine2_main_vol:
+        name: Wavetable 2 Main Vol
+        index: 121
+        sample: '-0.000'
+      engine2_position:
+        name: Wavetable 2 Position
+        index: 125
+        sample: '0.666'
+      engine2_fold_amount:
+        name: Wavetable 2 Fold Amount
+        index: 136
+      engine2_ph_dist_amount:
+        name: Wavetable 2 Ph Dist Amount
+        index: 134
+      engine2_mod_vol:
+        name: Wavetable 2 Mod Vol
+        index: 122
+      engine2_mod_amount:
+        name: Wavetable 2 Mod Amount
+        index: 129
+      engine2_pm_amount:
+        name: Wavetable 2 PM Amount
+        index: 131
+      engine2_coarse:
+        name: Coarse
+        index: 1232
+        sample: '0'
+      engine2_fine:
+        name: Fine
+        index: 1233
+        sample: '0.000'
+  utility:
+    tool: set_utility
+    description: 'The Utility engine: a virtual-analog sub-oscillator plus two sample-based Noise
+      sources, always present alongside Engines 1/2. Used here as the patch''s sub/noise layer.
+      The sub adds low-end weight; the Noise sources add air, grit, transient, or texture (they are
+      sample players, not just white noise). Each source has its own Volume and Filter Mix (balance
+      between main Filter 1/2) — there is no master Utility output. NOTE: the sub waveform
+      (Sine/Tri/Saw/Ramp/Square) and the loaded noise sample are menu/patch choices; Width is
+      pulse-width for tri/square only. On/off targets (utility_on, sub_on, noise1_on, noise2_on)
+      take 1.0 = ON/audible, 0.0 = OFF/silent — to mute a source set it to 0.0. The Coarse knobs
+      (sub_coarse, noise*_coarse) are a bipolar semitone tune spanning -36 st (0.0) to +36 st (1.0),
+      linear, so normalized = (semitones + 36) / 72: 0 st (no change) is 0.5, an octave down (-12)
+      is 0.333, -24 is 0.167. 0.0 is NOT "no change" — it is -36 st (the bottom). A sub usually sits
+      an octave or two BELOW the engines for low-end weight (a sub at the same pitch only doubles the
+      fundamental, it does not layer); compute the value from the interval, then read back
+      get_parameter''s formatted to confirm.'
+    params:
+      utility_on:
+        name: Utility Bypass
+        index: 1284
+        on_value: 1.0
+      sub_on:
+        name: Utility Osc OSC Bypass
+        index: 1285
+        on_value: 1.0
+      sub_coarse:
+        name: Utility Osc Coarse
+        index: 1286
+      sub_fine:
+        name: Utility Osc Fine
+        index: 1287
+      sub_width:
+        name: Utility Osc Width
+        index: 1288
+      sub_volume:
+        name: Sub Osc Volume
+        index: 1303
+        sample: '0.000'
+      sub_filter_mix:
+        name: Sub Osc Filter Mix
+        index: 1306
+      noise1_on:
+        name: Utility Noise1 Bypass
+        index: 1289
+        on_value: 1.0
+      noise1_coarse:
+        name: Utility Noise1 Coarse
+        index: 1290
+      noise1_filter:
+        name: Utility Noise1 Filter
+        index: 1295
+      noise1_length:
+        name: Utility Noise1 Length
+        index: 1293
+      noise1_loop:
+        name: Utility Noise1 Loop
+        index: 1294
+        on_value: 1.0
+      noise1_volume:
+        name: Noise 1 Volume
+        index: 1304
+        sample: '-0.000'
+      noise1_filter_mix:
+        name: Noise 1 Filter Mix
+        index: 1307
+      noise2_on:
+        name: Utility Noise2 Bypass
+        index: 1296
+        on_value: 1.0
+      noise2_coarse:
+        name: Utility Noise2 Coarse
+        index: 1297
+      noise2_filter:
+        name: Utility Noise2 Filter
+        index: 1302
+      noise2_length:
+        name: Utility Noise2 Length
+        index: 1300
+      noise2_loop:
+        name: Utility Noise2 Loop
+        index: 1301
+        on_value: 1.0
+      noise2_volume:
+        name: Noise 2 Volume
+        index: 1305
+      noise2_filter_mix:
+        name: Noise 2 Filter Mix
+        index: 1308
+  eq:
+    tool: set_eq
+    description: 'Param EQ in FX slot A1 (FIRST in bus A, pre-distortion). Five-band fully
+      parametric: Low shelf, three peaks, High shelf — each fc/gain/Q — plus Scale (master gain).
+      The surgical spectral tool; cut a named region here before it hits the distortion in A2.
+      Already ON in the base patch at Dry/Wet 0 — engage it by raising dry_wet, not via enabled.
+      On/off target `enabled`: 1.0 = effect engaged, 0.0 = bypassed.
+      samples not captured in this dump — re-dump with values to fill the unit hints.'
+    params:
+      enabled:
+        name: FX A1 Bypass
+        index: 204
+        on_value: 0.0
+      dry_wet:
+        name: FX A1 Dry/Wet
+        index: 205
+      low_shelf_fc:
+        name: FX A1 Param Eq LowShelf fc
+        index: 213
+      low_shelf_gain:
+        name: FX A1 Param Eq LowShelf Gain
+        index: 214
+      low_shelf_q:
+        name: FX A1 Param Eq LowShelf Q
+        index: 215
+      peak1_fc:
+        name: FX A1 Param Eq Peak 1 fc
+        index: 216
+      peak1_gain:
+        name: FX A1 Param Eq Peak 1 Gain
+        index: 217
+      peak1_q:
+        name: FX A1 Param Eq Peak 1 Q
+        index: 218
+      peak2_fc:
+        name: FX A1 Param Eq Peak 2 fc
+        index: 219
+      peak2_gain:
+        name: FX A1 Param Eq Peak 2 Gain
+        index: 220
+      peak2_q:
+        name: FX A1 Param Eq Peak 2 Q
+        index: 221
+      peak3_fc:
+        name: FX A1 Param Eq Peak 3 fc
+        index: 222
+      peak3_gain:
+        name: FX A1 Param Eq Peak 3 Gain
+        index: 223
+      peak3_q:
+        name: FX A1 Param Eq Peak 3 Q
+        index: 224
+      high_shelf_fc:
+        name: FX A1 Param Eq HighShelf fc
+        index: 225
+      high_shelf_gain:
+        name: FX A1 Param Eq HighShelf Gain
+        index: 226
+      high_shelf_q:
+        name: FX A1 Param Eq HighShelf Q
+        index: 227
+      scale:
+        name: FX A1 Param Eq Scale
+        index: 228
+  distortion:
+    tool: set_distortion
+    description: 'Distortion in FX slot A2 (after the EQ, before the reverb). drive sets the
+      distortion amount; output_gain trims level (auto-gain is on, so output_gain may have
+      little effect). This effect is already ON in the base patch at Dry/Wet 0 (inert) — engage it
+      by raising dry_wet; do not touch enabled to bring it in. The distortion has its OWN built-in
+      filter (separate from F1/F2 in set_filter) for shaping the grit: filter_on engages it;
+      filter_cutoff (in Hz) / filter_resonance shape it; filter_mode picks the type at exact values
+      0.0=low-pass, 0.333=high-pass, 0.667=band-pass, 1.0=notch (other values are unused — use
+      only these four); filter_routing places it Pre (0.0, before the distortion — e.g.
+      high-pass so the low end is not gritted) or Post (1.0, after it — e.g. low-pass to tame
+      fizz/harshness); filter_dark softens the filter''s top end.'
+    params:
+      enabled:
+        name: FX A2 Bypass
+        index: 282
+        on_value: 0.0
+      dry_wet:
+        name: FX A2 Dry/Wet
+        index: 283
+      drive:
+        name: FX A2 Distortion Drive
+        index: 1709
+        sample: '18.0'
+      output_gain:
+        name: FX A2 Distortion Output
+        index: 1717
+        sample: '-10.5'
+      filter_on:
+        name: FX A2 Filter On/Off
+        index: 1715
+        sample: 'Off'
+        on_value: 1.0
+      filter_cutoff:
+        name: FX A2 Filter Cutoff
+        index: 1711
+        sample: '139'
+      filter_resonance:
+        name: FX A2 Filter Resonance
+        index: 1712
+        sample: '0.707'
+      filter_mode:
+        name: FX A2 Filter Mode
+        index: 1713
+        sample: 'High Pas'
+      filter_routing:
+        name: FX A2 Filter Routing
+        index: 1714
+        sample: 'Pre'
+      filter_dark:
+        name: FX A2 Filter Dark
+        index: 1716
+        sample: 'Off'
+        on_value: 1.0
+  reverb:
+    tool: set_reverb
+    description: 'Reverb in FX slot A3 (LAST in bus A, post-distortion). Re-pointed from A1 after
+      the patch placed EQ->Distortion->Reverb across A1->A2->A3. Already ON in the base patch at
+      Dry/Wet 0 — engage it by raising dry_wet, not via enabled. sample values are pre-move unit hints.'
+    params:
+      predelay:
+        name: FX A3 Reverb Predelay
+        index: 362
+        sample: '0.020'
+      decay:
+        name: FX A3 Reverb Decay
+        index: 363
+        sample: '0.460'
+      damping:
+        name: FX A3 Reverb Damping
+        index: 364
+        sample: '0.273'
+      lowpass:
+        name: FX A3 Reverb LowPass Freq
+        index: 365
+        sample: '6408'
+      highpass:
+        name: FX A3 Reverb HighPass Freq
+        index: 366
+        sample: '299'
+      size:
+        name: FX A3 Reverb Size
+        index: 367
+        sample: '1.00'
+      dry_wet:
+        name: FX A3 Dry/Wet
+        index: 361
+        sample: '0.000'
+      enabled:
+        name: FX A3 Bypass
+        index: 360
+        sample: Enabled
+        on_value: 0.0
+  unison:
+    tool: set_unison
+    description: 'Per-engine voice stacking for width and thickness. Voices + Detune + Stereo
+      widen/fatten the sound; Mode picks the stacking style (Unison/Chord/Super); Unison is the
+      section on/off. Covers both Wavetable engines (Engine 1/2). Turning a unison section on does
+      nothing on its own — you must raise *_voices above 1 (e.g. 3-7); on with 1 voice is inaudible,
+      so always set voices whenever you engage unison.
+      samples not captured in this dump — re-dump with values to fill the unit hints.'
+    params:
+      wavetable1_unison_on:
+        name: Wavetable 1 Unison
+        index: 1188
+        on_value: 1.0
+      wavetable1_mode:
+        name: Wavetable 1 Unison Mode
+        index: 97
+      wavetable1_voices:
+        name: Wavetable 1 Unison Voices
+        index: 98
+      wavetable1_detune:
+        name: Wavetable 1 Unison Detune
+        index: 99
+      wavetable1_stereo:
+        name: Wavetable 1 Unison Stereo
+        index: 100
+      wavetable2_unison_on:
+        name: Wavetable 2 Unison
+        index: 1240
+        on_value: 1.0
+      wavetable2_mode:
+        name: Wavetable 2 Unison Mode
+        index: 137
+      wavetable2_voices:
+        name: Wavetable 2 Unison Voices
+        index: 138
+      wavetable2_detune:
+        name: Wavetable 2 Unison Detune
+        index: 139
+      wavetable2_stereo:
+        name: Wavetable 2 Unison Stereo
+        index: 140
+  mod_envelope:
+    tool: set_mod_envelope
+    description: 'Envelope 2, wired in the patch to FILTER 1 CUTOFF. This is the filter envelope:
+      it makes the tone move over the life of each note, on top of the amp envelope (set_envelope).
+      Shape it to get plucks, chugs, swells, and pumping. attack = how fast the filter opens at note
+      start (0 = instant, the snap of a pluck/chug); decay = how fast it falls back after the attack
+      (short decay + low sustain = tight pluck/chug; the core control for a chugging bass); sustain =
+      where the filter settles and holds while the key is down; release = how long the filter stays
+      open after release. This shapes the envelope CONTOUR; how MUCH it moves the filter is
+      filter_env_amount in set_movement (0 = no filter-envelope motion / clean, raise for a stronger
+      sweep). So pair this with filter_env_amount, and with the cutoff base value (set_filter
+      f1_cutoff) the envelope moves from. Two cautions: (1) the envelope opens the filter UP from
+      that f1_cutoff base, so leave the base room to move — if f1_cutoff is already near max the
+      upward sweep is inaudible; lower the base first. (2) Keep these times in the same ballpark as
+      the amp envelope (set_envelope): if the filter sweep runs much longer than the note''s loudness
+      contour, the note fades out before the sweep is heard.'
+    params:
+      attack:
+        name: Env 2 Attack
+        index: 13
+        sample: '1.00'
+      decay:
+        name: Env 2 Decay
+        index: 14
+        sample: '0.500'
+      sustain:
+        name: Env 2 Sustain
+        index: 15
+        sample: '0.000'
+      release:
+        name: Env 2 Release
+        index: 16
+        sample: '0.100'
+      attack_curve:
+        name: Env 2 AttackCurve
+        index: 17
+      decay_curve:
+        name: Env 2 DecayCurve
+        index: 18
+  lfo:
+    tool: set_lfo
+    description: 'The two movement LFOs and their CHARACTER (speed + shape). How MUCH each is heard
+      is separate — set it with set_movement (wobble_amount / vibrato_amount); at amount 0 the LFO is
+      silent and the sound is clean. wobble_* = LFO 1 -> Filter 1 cutoff (rhythmic filter movement,
+      the dubstep "wub"; sync it to tempo for in-time wobble). vibrato_* = LFO 2 -> engine pitch
+      (vibrato / pitch movement). For each: rate = speed in Hz when free, sync_division locks it to
+      musical note values, waveform = shape (sine = smooth, square = trill/on-off, sample&hold =
+      random steps), symmetry skews it, fade ramps it in after the note starts. You must raise the
+      matching set_movement amount to hear any of this.'
+    params:
+      wobble_rate:
+        name: LFO 1 Frequency
+        index: 29
+        sample: '0.500'
+      wobble_sync_division:
+        name: LFO 1 Tempo Div
+        index: 30
+        sample: '1/2'
+      wobble_waveform:
+        name: LFO 1 Waveform
+        index: 31
+        sample: '0.000'
+      wobble_symmetry:
+        name: LFO 1 Symmetry
+        index: 32
+      wobble_fade:
+        name: LFO 1 Fade
+        index: 37
+      vibrato_rate:
+        name: LFO 2 Frequency
+        index: 38
+      vibrato_sync_division:
+        name: LFO 2 Tempo Div
+        index: 39
+        sample: '1/2'
+      vibrato_waveform:
+        name: LFO 2 Waveform
+        index: 40
+        sample: '0.000'
+      vibrato_symmetry:
+        name: LFO 2 Symmetry
+        index: 41
+        sample: '0.500'
+      vibrato_fade:
+        name: LFO 2 Fade
+        index: 46
+  movement:
+    tool: set_movement
+    description: 'How MUCH of each patch movement is applied — the clean-vs-animated controls. Each
+      target is a macro that scales one modulation routing: 0 = that movement is OFF (clean/static),
+      1 = full depth. For a clean, static sound set all three to 0. To animate, raise the one you want
+      and shape its character elsewhere: wobble_amount pairs with set_lfo wobble_* (filter wobble),
+      vibrato_amount with set_lfo vibrato_* (pitch vibrato), filter_env_amount with set_mod_envelope
+      (the per-note filter pluck/chug). These set DEPTH; the shape tools set CHARACTER.'
+    params:
+      wobble_amount:
+        name: Macro 1
+        index: 1
+        sample: '0.000'
+      vibrato_amount:
+        name: Macro 2
+        index: 2
+        sample: '0.000'
+      filter_env_amount:
+        name: Macro 3
+        index: 3
+        sample: '0.000'
+  chorus:
+    tool: set_chorus
+    description: 'Chorus (JUN-6 model) in FX bus B, slot 1 — thickens and widens the sound with a
+      lush ensemble shimmer, the classic way to fatten a thin or static patch ("wider", "lusher",
+      "richer"). dry_wet sets how much chorus is blended in; rate is the modulation speed; depth is
+      how deep the pitch wobble goes. Engage it by raising dry_wet (on-by-default at Dry/Wet 0),
+      not via enabled; Bus B must also be on (see set_mix bus_b_on).'
+    params:
+      enabled:
+        name: FX B1 Bypass
+        index: 438
+        sample: Enabled
+        on_value: 0.0
+      dry_wet:
+        name: FX B1 Dry/Wet
+        index: 439
+        sample: '50.0'
+      rate:
+        name: FX B1 Chorus JUN-6 Manual Rate
+        index: 1474
+        sample: '0.326'
+      depth:
+        name: FX B1 Chorus JUN-6 Manual Depth
+        index: 1476
+        sample: '1.82'
+  delay:
+    tool: set_delay
+    description: 'Stereo Delay in FX bus B, slot 2 — echoes for space, depth, and rhythm ("echo",
+      "spacey", "dub", "slapback"). time sets the echo spacing in ms when free; sync_division locks it
+      to tempo note values instead; feedback sets how many repeats (low = a slap, high = long trails);
+      highpass/lowpass shape the tone of the echoes (darker, thinner repeats sit back in the mix).
+      Engage it by raising dry_wet (on-by-default at Dry/Wet 0), not via enabled; Bus B must also
+      be on (see set_mix bus_b_on).'
+    params:
+      enabled:
+        name: FX B2 Bypass
+        index: 516
+        sample: Enabled
+        on_value: 0.0
+      dry_wet:
+        name: FX B2 Dry/Wet
+        index: 517
+        sample: '20.0'
+      time:
+        name: FX B2 Delay Time
+        index: 561
+        sample: '122'
+      sync_division:
+        name: FX B2 Delay Synced
+        index: 562
+        sample: '1/4'
+      feedback:
+        name: FX B2 Delay Feedback
+        index: 563
+        sample: '0.352'
+      highpass:
+        name: FX B2 Delay HighPass fc
+        index: 564
+        sample: '20.0'
+      lowpass:
+        name: FX B2 Delay LowPass fc
+        index: 565
+        sample: '20000'
+  glide:
+    tool: set_glide
+    description: 'Portamento — pitch slides between notes ("glide", "slide", "303 bass", "smooth
+      lead"). glide = slide time (0 = off/instant, higher = slower, more audible sweep between
+      pitches). glide_mode = 1 slides on every note, 0 slides only when notes are played legato
+      (overlapping). For a classic acid/legato bass, raise glide and set glide_mode to legato (0).'
+    params:
+      glide:
+        name: Glide
+        index: 914
+        sample: '0.000'
+      glide_mode:
+        name: Glide Mode
+        index: 915
+        sample: Always
