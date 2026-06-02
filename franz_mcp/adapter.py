@@ -28,7 +28,11 @@ Normalized = float
 
 
 class DawAdapter(ABC):
-    """The contract every DAW backend implements."""
+    """The contract every DAW backend implements.
+
+    Subclass this and implement `read_state` + `apply` (the two `@abstractmethod`s) to
+    add a new DAW. The other methods are optional — override the ones your DAW can do.
+    """
 
     @abstractmethod
     def read_state(self, param_ids: list[ParamId]) -> dict[ParamId, Normalized]:

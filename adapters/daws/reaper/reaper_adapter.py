@@ -4,6 +4,11 @@ Locates the Pigments FX on a named track and reads/writes normalized values in b
 round-trips through `reapy.inside_reaper()`. Params are addressed by index — Pigments
 exposes no real idents (TrackFX_GetParamIdent returns the index as a string).
 
+About `with reapy.inside_reaper():` — every reapy call is normally a separate network
+round-trip to Reaper's distant-API server (slow). Inside the `with` block, all the
+ReaScript calls are bundled and sent as a single round-trip. We use it anywhere we make
+more than one call (dumping every param, reading/writing a batch).
+
 probe()/read_observation() (the analyzer path) are not implemented; only
 read_state/apply, which is what the model-facing tools and checkpoint primitives need.
 """
@@ -114,6 +119,9 @@ class ReaperAdapter(DawAdapter):
             n = fx.n_params
             params = []
             for i in range(n):
+                # ReaScript's GetParam* functions fill an out-string buffer; reapy returns
+                # it as a tuple where index 4 holds the filled string. `""` and `1024` are
+                # the buffer + capacity that ReaScript needs as inputs.
                 name = rpr.TrackFX_GetParamName(
                     self._track_id, self._fx_index, i, "", 1024
                 )[4]

@@ -1,8 +1,9 @@
 # Plugin bundles
 
 A plugin bundle is the synth-specific knowledge Franz needs to shape *that* instrument with
-language. It's pure data and prose — no code. The portable MCP server (`franz_mcp/`) loads
-a bundle by path; the DAW adapter is what actually moves the parameters.
+language. It's pure data and prose — no code. The portable MCP server (`franz_mcp/`, the
+LLM-facing tool server) loads a bundle by path; the DAW adapter is what actually moves the
+parameters.
 
 A bundle has five files, each read by a different consumer:
 
@@ -26,8 +27,9 @@ to see how the bundle teaches the model to use those tools.
 
 ## Writing a new plugin bundle
 
-1. **Get the full parameter list out of the plugin** (via your DAW adapter or any
-   automation-mapping tool). For Pigments + Reaper that's `uv run franz-dump`.
+1. **Get the full parameter list out of the plugin** via your DAW's scripting API. Write
+   each one's index + display name to JSON; that's the raw material `parameters.yaml` is
+   curated from.
 2. **Hand-pick the sound-shaping params** — aim for 30–100 of the front-panel moves a
    sound designer reaches for, not every modulation-matrix cell.
 3. **Group them into tools** (`set_oscillator`, `set_filter`, `set_fx`, …). Each group

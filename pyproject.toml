@@ -1,19 +1,19 @@
 [project]
 name = "franz"
 version = "0.1.0"
-description = "A synth sound-design assistant: an LLM diagnoses and surgically adjusts Pigments parameters in Reaper via MCP."
+description = "An LLM sound-design assistant for synth plugins, via MCP."
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10,<3.13"
 dependencies = [
-    "python-reapy>=0.10.0",
+    "mcp>=1.2.0",
     "pyyaml>=6.0",
 ]
 
 [project.optional-dependencies]
-# Added in M2; the official SDK, not the third-party `fastmcp` package (see PLAN §5).
-mcp = [
-    "mcp>=1.2.0",
+# Pull only what your target DAW needs. Each adapter declares its own extra.
+reaper = [
+    "python-reapy>=0.10.0",
 ]
 
 [build-system]
@@ -24,9 +24,8 @@ build-backend = "hatchling.build"
 packages = ["franz_mcp", "adapters"]
 
 [project.scripts]
-franz-serve = "adapters.daws.reaper.serve:main"
-franz-dump = "adapters.daws.reaper.dump_params:main"
-franz-checkmap = "adapters.daws.reaper.check_param_map:main"
+# One launcher per DAW adapter. New adapters add their own (e.g. franz-ableton).
+franz-reaper = "adapters.daws.reaper.serve:main"
 
 [tool.uv]
 # reapy is old; pin an interpreter it actually supports rather than the system 3.14.

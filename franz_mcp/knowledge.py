@@ -36,12 +36,13 @@ class Param:
         return self.on_value is not None
 
     def resolve_value(self, value: float) -> float:
-        """Map a tool-facing value to the raw normalized to write. Toggles use a uniform
-        semantic — value>=0.5 means ON (write on_value), else OFF (write its complement) —
-        so the model never has to know a given param's internal polarity. Continuous params
-        pass through unchanged."""
+        """Map a tool-facing value to the raw normalized to write. Continuous params pass
+        through unchanged. Toggles use a uniform semantic — value>=0.5 means ON, else OFF —
+        so the model never has to know a given param's internal polarity."""
         if self.on_value is None:
             return value
+        # `on_value` is the normalized value that means ON for this toggle (0.0 or 1.0).
+        # Its complement (1.0 - on_value) is therefore OFF.
         return self.on_value if value >= 0.5 else 1.0 - self.on_value
 
 

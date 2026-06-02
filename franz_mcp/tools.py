@@ -4,7 +4,7 @@ Model-facing (the LLM drives these):
   set_<group>(target, value)   one per bundle group, each with an enum of its targets
   get_parameter(parameter)     read one param back (normalized + formatted)
 
-Checkpoint primitives (a host client or MCP Inspector drives these, not the model):
+Checkpoint primitives (a host client drives these, not the model):
   get_state()                  batched read of every exposed param
   apply_state(state)           batched restore
 
@@ -15,16 +15,20 @@ stays DAW-agnostic. Values are normalized 0..1.
 import typing
 from typing import TYPE_CHECKING
 
-# NOTE: no `from __future__ import annotations` here. FastMCP introspects tool
-# signatures with eval_str=True; the per-group `target: TargetEnum` annotation is a
-# closure-local Literal that must stay a real object, not a deferred string.
+# The per-group `target` argument is restricted to a fixed list of parameter ids. We
+# express that list with `typing.Literal[...]` rather than an `enum.Enum`, and we omit
+# `from __future__ import annotations` so the type stays a real object.
 #
-# `target` is a typing.Literal, NOT an enum.Enum, on purpose: pydantic emits an Enum
-# into `$defs` and references it from the property (`target: {"$ref": ...}`), but inlines
-# a Literal directly as `{"type": "string", "enum": [...]}`. Clients that don't resolve
-# `$ref`/`$defs` (Claude Desktop flattens without dereferencing) then see `target` as
-# untyped — the model reads it as "anything goes" and passes null. Inlining keeps the
-# allowed-targets list on the property so it survives every client.
+# Two non-obvious mechanics to know:
+#   1. FastMCP reads each tool's annotations at registration time and turns them into a
+#      JSON schema the LLM sees. With deferred (string) annotations it would only see
+#      the literal text "TargetLiteral" instead of the allowed values.
+#   2. Pydantic (which FastMCP uses to build the schema) inlines a Literal as
+#      {"type": "string", "enum": [...]} on the property itself, but stuffs an Enum in
+#      `$defs` and references it via `$ref`. Some MCP clients (Claude Desktop) drop
+#      `$ref`/`$defs` when flattening the schema, leaving `target` looking untyped — the
+#      model then passes null. Literal keeps the allowed values on the property so it
+#      survives every client.
 
 if TYPE_CHECKING:
     from mcp.server.fastmcp import FastMCP
@@ -45,8 +49,8 @@ def _make_setter(adapter, knowledge, group):
     get_state report and that this tool echoes back on success. One id everywhere, so a
     name the model just read can be passed straight into a set call without translation."""
     params = [knowledge.resolve(group, ln) for ln in knowledge.groups[group].labels]
-    # The Literal's members are the qualified ids — exactly what the model passes and what
-    # validation checks, inlined onto the property (see module note).
+    # `Literal[tuple(...)]` builds a Literal whose allowed values are this group's qualified
+    # ids — pydantic then inlines them on the `target` property (see module note).
     TargetLiteral = typing.Literal[tuple(p.qualified for p in params)]
 
     def setter(target: TargetLiteral, value: float) -> str:
@@ -79,6 +83,9 @@ def _make_setter(adapter, knowledge, group):
 
 
 def register_tools(mcp: "FastMCP", adapter: "DawAdapter", knowledge: "Knowledge") -> None:
+    # `mcp.add_tool(fn, name=...)` is how FastMCP exposes a Python function to the LLM:
+    # it reads the function's annotations + docstring and serves them as a JSON-schema
+    # tool definition over the MCP protocol. Calling the tool calls the function.
     for group in knowledge.groups:
         tool = knowledge.groups[group].tool
         mcp.add_tool(_make_setter(adapter, knowledge, group), name=tool)

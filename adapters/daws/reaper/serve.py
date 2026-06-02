@@ -1,10 +1,11 @@
-"""Reaper launcher for the Franz MCP server (the command Claude Desktop / the Inspector
-runs). Wires the concrete ReaperAdapter + the Pigments bundle into the portable server.
+"""Reaper launcher for the Franz MCP server (the command an MCP client runs). Wires the
+concrete ReaperAdapter + the Pigments bundle into the portable server.
 
-    uv run franz-serve            # stdio MCP server
+    uv run franz-reaper           # stdio MCP server
 
-Reaper must be running (launched via scripts/launch_reaper.sh) with the Franz track +
-Pigments. If it isn't up yet, the server still starts and connects on the first tool call.
+Reaper must be running (launched via adapters/daws/reaper/launch_reaper.sh) with the
+Franz track + Pigments. If it isn't up yet, the server still starts and connects on the
+first tool call.
 """
 
 from __future__ import annotations
