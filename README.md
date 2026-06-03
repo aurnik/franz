@@ -1,6 +1,8 @@
 # Franz
 
-A synth sound-design assistant. A musician describes a change in plain language; an LLM
+_From the "Talk to Your Synth" presentation at the Audio Developer Conference in Tokyo_
+
+A music production assistant. A musician describes a change in plain language; an LLM
 observes the current sound spectrally, reasons about it using a hand-authored signal-flow
 document, and surgically adjusts Pigments parameters in Reaper. Under the hood it's an MCP
 (Model Context Protocol) server — any MCP-capable LLM client can connect to it.
